@@ -1,0 +1,17 @@
+{"scope": [
+    "ugc-image-upload",
+    "user-read-playback-state",
+    "user-modify-playback-state",
+    "user-read-currently-playing",
+    "app-remote-control",
+    "playlist-modify-public",
+    "playlist-modify-private",
+    "playlist-read-private",
+    "playlist-read-collaborative",
+    "user-read-email",
+    "user-read-private",
+    "user-library-read",
+    "user-library-modify",
+    "user-read-recently-played"
+  ]
+}

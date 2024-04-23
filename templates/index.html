@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+
+.parent-element {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+}
+
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+</style>
+
+
+</head>
+<body>
+
+
+<div class="container">
+  <div class="center">
+    
+    <div id="login_container">
+      <button id="login_apple_music_button">Login to Apple Music account</button> 
+      <button id="login_spotify_button">Login to Spotify account</button>
+      <br>
+      <!-- <button id="unverify_apple_music_button">Use this when apple music login button gets stuck</button> -->
+    </div>
+    <div id="playlist_container">
+
+
+    </div>
+
+    <script defer type="text/javascript" src="{{ url_for('static', filename='index.js') }}"></script>
+    <script defer src="https://js-cdn.music.apple.com/musickit/v1/musickit.js"></script>
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+
+  </div>
+</div>
+
+
+
+</body>
+</html>
