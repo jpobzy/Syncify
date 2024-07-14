@@ -5,25 +5,13 @@ socket.on('connect', function() {
 
 let apple_music_auth_bool = false;
 
-// window.addEventListener('beforeunload', window_refresh_event);
-// function window_refresh_event(){
-//     if (apple_music_auth_bool === true){
-//       window.music.unauthorize();  
-//     }
-//     socket.close();
-// };
-
-
-
-// document.getElementById('unverify_apple_music_button').addEventListener('click', unverify_apple_music_button)
-
-// function unverify_apple_music_button(){
-//     window.music.unautherize();
-// };
-
-
-
-
+window.addEventListener('beforeunload', window_refresh_event);
+function window_refresh_event(){
+    // if (apple_music_auth_bool === true){
+    //   window.music.unauthorize();  
+    // }
+    socket.close();
+};
 
 document.addEventListener('musickitloaded', () =>{
     console.log('musickitloaded');
@@ -68,35 +56,14 @@ function login_to_spotify(){
 
 socket.on('spotify_authorization_url', function (data) {
     const new_window = window.open(data.url, '_blank');
-    myInterval = setInterval(function (){
-        if (new_window.closed){
-            console.log('window closed')
-            clearInterval(myInterval);
-        }else{
-            const urlParams = new URLSearchParams(new_window.location.search);
-            const authorizationCode = urlParams.get('code');
-            console.log(authorizationCode);
-            if (authorizationCode != null){
-                login_button = document.getElementById('login_spotify_button')
-                login_button.removeEventListener('click', login_to_spotify);
-                login_button.remove();
-                clearInterval(myInterval);
-                socket.emit('spotify_auth_code', authorizationCode);
-                new_window.close();
-
-                
-            }else{
-                console.log('please sign in');
-            };
-        }
-    }, 1000); 
 });
-
 
 
 socket.on('spotify_user_login_success', function spotifyUserLoginSuccessHandler(spotify_username){
     window.spotify_username = spotify_username.username;
     spotify_account_authorized = true
+    login_button = document.getElementById('login_spotify_button')
+    login_button.remove();
     both_accounts_authorized()
 });
 
@@ -114,6 +81,8 @@ function login_to_apple_music(){
 socket.on('apple_music_user_login_success', function(apple_music_username) {  
     login_button = document.getElementById('login_apple_music_button')
     login_button.remove();
+    cookies_button = document.getElementById('deleteCookiesBtn')
+    cookies_button.remove();
     window.apple_music_username = apple_music_username.username;
     apple_music_account_authorized = true
     both_accounts_authorized()
@@ -142,6 +111,10 @@ function root_page_templating(){
     playlist_container.innerHTML += '<button onclick="transfer_spotify()" ">Transfer Spotify Playlist to Apple Music</button>';
     playlist_container.innerHTML += '<br>';
     playlist_container.innerHTML += '<button onclick="transfer_apple_music_to_spotify()">Transfer Apple Music Playlist to Spotify</button>';
+    playlist_container.innerHTML += '<br>';
+    playlist_container.innerHTML += '<br>';
+    // playlist_container.innerHTML += '<button onclick="sync()">Sync a playlist</button>';
+    playlist_container.innerHTML += '<button onclick="get_link()">Transfer a playlist from a link</button>';
 };
 
 
@@ -178,12 +151,12 @@ function transfer_spotify_playlist_chosen(playlist_id, playlist_name){
     playlist_container.innerHTML = "<p>" + "Please wait while " + playlist_name + " is being transferred" + "</p>"
     socket.emit('transfer_this_spotify_playlist_to_apple_music', playlist_id, playlist_name)
     socket.on("transfer_completed", function(transfer_completion_data){
-        if (transfer_completion_data['transfer_status_code'] == 204){
-            playlist_container.innerHTML = '<p>Transfer was successful for playlist ' + transfer_completion_data['playlist_transferred_name'] + '</p>'
-            playlist_container.innerHTML += '<button onclick="root_page_templating()">Main menu</button>';
-            playlist_container.innerHTML += '<br>';
-            playlist_container.innerHTML += '<button onclick="transfer_spotify()">Transfer another Apple Music playlist to Spotify</button>';
-        };
+
+        playlist_container.innerHTML = '<p>Transfer was successful for playlist ' + transfer_completion_data['playlist_transferred_name'] + '</p>'
+        playlist_container.innerHTML += '<button onclick="root_page_templating()">Main menu</button>';
+        playlist_container.innerHTML += '<br>';
+        playlist_container.innerHTML += '<button onclick="transfer_spotify()">Transfer another Apple Music playlist to Spotify</button>';
+        
     });
 
 };
@@ -219,15 +192,70 @@ function transfer_apple_muisic_playlist_chosen(playlist_id, playlist_name){
     playlist_container.innerHTML = "<p>" + "Please wait while " + playlist_name + " is being transferred" + "</p>"
     socket.emit('transfer_this_apple_music_playlist_to_spotify', playlist_id, playlist_name)
     socket.on("transfer_completed", function(transfer_completion_data){
-        if (transfer_completion_data['transfer_status_code'] == 200){
-            playlist_container.innerHTML = '<p>Transfer was successful for playlist ' + transfer_completion_data['playlist_transferred_name'] + '</p>'
-            playlist_container.innerHTML += '<button onclick="root_page_templating()">Main menu</button>';
-            playlist_container.innerHTML += '<br>';
-            playlist_container.innerHTML += '<button onclick="transfer_apple_music_to_spotify()">Transfer another Apple Music playlist to Spotify</button>';
-        };
+        
+        playlist_container.innerHTML = '<p>Transfer was successful for playlist ' + transfer_completion_data['playlist_transferred_name'] + '</p>'
+        playlist_container.innerHTML += '<button onclick="root_page_templating()">Main menu</button>';
+        playlist_container.innerHTML += '<br>';
+        playlist_container.innerHTML += '<button onclick="transfer_apple_music_to_spotify()">Transfer another Apple Music playlist to Spotify</button>';
+    
     });
 
 };
 
 
 
+socket.on("playlist_missing_tracks", function(){
+    playlist_container.innerHTML = '<p>Transfer failed due to playlist not having any tracks added to it</p>'
+    playlist_container.innerHTML += '<button onclick="root_page_templating()">Main menu</button>';
+    playlist_container.innerHTML += '<br>';
+    
+});
+
+
+
+
+const formContent = `
+            <form id="playlist_form" autocomplete="OFF">
+                <label for="link">Playlist link:</label>
+                <input type="text" name="link" id="link"><br><br>
+                <label for="platform">Choose a platform:</label>
+                <select name="platform" id="platform">
+                    <option value="spotify">Spotify</option>
+                    <option value="apple_music">Apple Music</option>
+                </select><br><br>
+                <input type="button" value="Submit" onclick="submit_link()">
+                
+            </form>
+        `;
+
+
+function get_link(){
+//     console.log('link clicked')
+    var playlist_container = document.getElementById('playlist_container');
+    playlist_container.innerHTML = formContent;
+    playlist_container.innerHTML += '<button onclick="root_page_templating()">Main menu</button>';
+};
+
+
+function submit_link() {
+    link = document.getElementById('link').value;
+    platform = document.getElementById('platform').value
+    let spotify_beginning_link = 'https://open.spotify.com/playlist/';
+    let apple_music_beginning_link = 'https://music.apple.com/us/playlist/';
+    if (link.startsWith(spotify_beginning_link) || link.startsWith(apple_music_beginning_link)){
+        socket.emit('playlist_link', link, platform);
+        var playlist_container = document.getElementById('playlist_container');
+        playlist_container.innerHTML = 'Please wait';
+
+        socket.on("transfer_completed", function(transfer_completion_data){
+            // if (transfer_completion_data['transfer_status_code'] == 200){
+            playlist_container.innerHTML = '<p>Transfer was successful for playlist ' + transfer_completion_data['playlist_transferred_name'] + '</p>'
+            playlist_container.innerHTML += '<button onclick="root_page_templating()">Main menu</button>';
+            playlist_container.innerHTML += '<br>';
+            
+            // };
+        });
+    
+    };
+
+};

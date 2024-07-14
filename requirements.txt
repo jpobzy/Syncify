@@ -5,4 +5,5 @@ python-dateutil
 pyjwt[crypto]
 jsonify
 flask_socketio
+thefuzz
 
