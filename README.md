@@ -1,4 +1,4 @@
-# SA-PlaylistTransfer
+# Syncify
 
 In order to use this you need both a Apple apple which has the Apple Developer Program ($99/yr fee) and a Spotify Developer account (free) 
 
