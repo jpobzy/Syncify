@@ -8,6 +8,7 @@ You will also need to have [Docker desktop installed](https://www.docker.com/pro
 
 
 # Apple account setup:
+(requries an Apple developer account for $99 a year)
 
 You can either follow [this guide](https://developer.apple.com/help/account/configure-app-capabilities/create-a-media-identifier-and-private-key/#:~:text=Register%20a%20media%20identifier,requesting%20access%20to%20Apple%20Music.)
 
@@ -16,8 +17,8 @@ or follow the steps below:
 1. Go to the [Apple developer page](https://developer.apple.com/) 
 2. Hit account (right side next to the magnifier glass) > sign in
 3. Scroll down to `Membership details` and look for `Team ID` and copy that 10 character value 
-4. Scroll up and locate `Certificates, IDs & Profiles` in `Program resources`
-5. Click on `Certificates` and then create a new Identifier (blue plus button)
+4. Scroll up and locate `Certificates, IDs & Profiles` in `Program resources` or scroll down and click on `Certificates, IDs & Profiles`
+5. Click on `Identifiers` and then create a new Identifier (blue plus button)
 6. Choose `Media ID's` then continue
 7. Enter a description and identifier
 8. Enable MusicKit
@@ -38,7 +39,7 @@ or follow the steps below:
 
 1. Go to the [spotify developer page](https://developer.spotify.com/) and sign in
 2. Click on your account and go to the dashboard
-3. Create an app and make sure the Redirect URI is `http://localhost:8080/callback/`
+3. Create an app and make sure the Redirect URI is `[http://localhost:8080/callback/](http://127.0.0.1:8000/callback)`
 4. Once the app is created go into and click on `Settings`
 5. Copy and paste the `Client ID` and `Client Secret` values into the `Spotify_config.json` file
 
