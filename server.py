@@ -58,7 +58,8 @@ def reroute():
     current_path = request.full_path
     
     # Construct the new URL with 'www' subdomain
-    new_url = f"http://www.localhost:8080{current_path}"
+    # new_url = f"http://www.127.0.0.1:8000{current_path}"
+    
     print(f"curr path is {current_path}")
     spotify_authorization_code = current_path.split('code=')[1]
     print(f'auth code is {spotify_authorization_code}')
